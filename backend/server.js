@@ -1,77 +1,32 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";  // CORS modülünü ekledik
+import path from "path";
 import { connectionDB } from "./config/db.js";
-import Product from "../models/product.model.js";
-import product from "../models/product.model.js";
-import mongoose from "mongoose";
-
+import productRoutes from "../routes/product.route.js";
 
 dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 5000;
 
+// CORS Middleware'ini kullan
+app.use(cors());  // Tüm domainlere izin verir (Güvenli değil ama lokal geliştirme için yeterli)
+const __dirname = path.resolve(); // __dirname'i tanımladık
+// JSON Middleware
 app.use(express.json());
 
-app.get("/api/products",async(req,res)=>{
-try{
-    const products = await product.find({});
-    res.status(200).json({success:true,Data:products});
-}catch(error){
-    console.log("error in fetching products:",error.message);
-    res.status(500).json({success:false, message:"server error"});
+// API Route'ları
+app.use("/api/products", productRoutes);
+
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname, "/frontend/build")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+    });
 }
 
-});
-app.post("/api/products",async(req,res)=>{
-const product = req.body;
-
-if(!product.name || !product.price || !product.image){
-    return res.status(400).json({success:false ,message:"please provide all fields"});
-}
- 
-const newProduct =new Product(product); 
-
-try{
-
-    await newProduct.save();
-    res.status(201).json({success:true,Data:newProduct})
-}catch(error){
-console.error("error in create product",error.message);
-res.status(500).json({success:false, message:"server error"});
-}
-});
-app.put("/api/products/:id",async(req, res)=>{
-
-    const{id}=req.params;
-
-    const product=req.body;
-
-    if(!mongoose.Types.ObjectId.isValid(id)){
-     return res.status(404).json({success:false,message:"invalid product Id"});
-    }
-    try{
-       const updatedProduct= await Product.findByIdAndUpdate(id,product,{new:true});
-        res.status(200).json({success:true,Data:updatedProduct});
-    }catch(error){
-       res.status(500).json({success:false, message:"server error"});
-    }
-});
-app.delete("/api/products/:id",async(req,res)=>
-
-{
-    const {id} =req.params;
-
-    try{
-        await product.findByIdAndDelete(id);
-        res.status(200).json({success:true, message:"product deleted"});
-
-    }catch (error){
-      console.log("error in deleting product:",error.message);
-        res.status(404).json({success:false,message:"product not found"});
-    }
-});
-
-
-app.listen(5000,()=>{
+// Server'ı başlat
+app.listen(PORT, () => {
     connectionDB();
-    console.log("server started at https://localhost:5000 ");
+    console.log("Server started at http://localhost:" + PORT);
 });
