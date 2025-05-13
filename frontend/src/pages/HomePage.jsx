@@ -9,7 +9,7 @@ const HomePage = () => {
 
   useEffect(() => {
     fetchProducts();
-  },); // fetchProducts bağımlılık olarak eklenmedi, böylece sonsuz döngü olmaz
+  },); 
 
   console.log("products", products);
 
@@ -23,7 +23,7 @@ const HomePage = () => {
           bgGradient="linear(to-r, cyan.400, blue.500)"
           bgClip="text"
         >
-          Current Products 🚀
+          Mevcut Kıyafetler🚀 
         </Text>
 
         {products.length > 0 ? (
@@ -36,10 +36,10 @@ const HomePage = () => {
           </SimpleGrid>
         ) : (
           <Text fontSize="xl" textAlign="center" fontWeight="bold" color="gray.500">
-            No products found{" "}
+           Hiç ürün bulunamadı{" "}
             <Link to="/create">
               <Text as="span" color="blue.500" _hover={{ textDecoration: "underline" }}>
-                Create a Product
+                Kıyafet eklemek için buraya tıklayın
               </Text>
             </Link>
           </Text>
