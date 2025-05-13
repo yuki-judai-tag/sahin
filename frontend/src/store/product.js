@@ -8,7 +8,7 @@ export const useProductStore = create((set) => ({
     // ✅ Ürün Oluşturma
     createProduct: async (newProduct) => {
         if (!newProduct.name || !newProduct.image || !newProduct.price) {
-            return { success: false, message: "Please fill all fields" };
+            return { success: false, message: "Tüm alanları doldurunuz" };
         }
 
         try {
@@ -19,16 +19,16 @@ export const useProductStore = create((set) => ({
             });
 
             if (!res.ok) {
-                throw new Error("Failed to create product");
+                throw new Error("Ürün oluşturulamadı");
             }
 
             const data = await res.json();
 
             if (data.success) {
                 set((state) => ({ products: [...state.products, data.Data] }));
-                return { success: true, message: "Product Created Successfully" };
+                return { success: true, message: "Ürün başarıyla oluşturuldu" };
             } else {
-                return { success: false, message: "Failed to create product" };
+                return { success: false, message: "Ürün oluşturulamadı" };
             }
         } catch (error) {
             return { success: false, message: error.message };
@@ -41,7 +41,7 @@ export const useProductStore = create((set) => ({
             const res = await fetch("http://localhost:5000/api/products");
 
             if (!res.ok) {
-                throw new Error("Failed to fetch products");
+                throw new Error("Ürünler alınamadı");
             }
 
             const data = await res.json();
@@ -52,14 +52,14 @@ export const useProductStore = create((set) => ({
                 set({ products: [] });
             }
         } catch (error) {
-            console.error("Error fetching products:", error);
+            console.error("ürünler alınırken hata oluştu", error);
         }
     },
 
     // ✅ Ürün Silme
     deleteProduct: async (pid) => {
         const res = await fetch(`http://localhost:5000/api/products/${pid}`, {
-            method: "DELETE",
+            method: "Sil",
         });
         const data = await res.json();
         if (!data.success) return { success: false, message: data.message };
@@ -90,7 +90,7 @@ export const useProductStore = create((set) => ({
                 ),
             }));
 
-            return { success: true, message: "Product updated successfully" };
+            return { success: true, message: "Ürün başarıyla güncellendi" };
         } catch (error) {
             return { success: false, message: error.message };
         }

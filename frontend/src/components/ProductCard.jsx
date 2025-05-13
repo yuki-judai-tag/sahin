@@ -19,9 +19,9 @@ const ProductCard = ({ product }) => {
     const handleDeleteProduct = async (pid) => {
         const { success, message } = await deleteProduct(pid);
         toast({
-            title: success ? "Success" : "Error",
+            title: success ? "Başarılı" : "Hata",
             description: message,
-            status: success ? "success" : "error",
+            status: success ? "Başarılı" : "Hata",
             isClosable: true,
             duration: 3000,
         });
@@ -30,9 +30,9 @@ const ProductCard = ({ product }) => {
     const handleUpdateProduct = async () => {
         const { success, message } = await updateProductStore(product._id, updateProduct);  // updateProductStore kullanıldı!
         toast({
-            title: success ? "Success" : "Error",
+            title: success ? "Başarılı" : "Hata",
             description: message,
-            status: success ? "success" : "error",
+            status: success ? "Başarılı" : "Hata",
             isClosable: true,
             duration: 3000,
         });
@@ -91,10 +91,10 @@ const ProductCard = ({ product }) => {
                     </ModalBody>
                     <ModalFooter>
                         <Button colorScheme="blue" mr={3} onClick={handleUpdateProduct}>
-                            Update
+                            Güncelle
                         </Button>
                         <Button variant="ghost" mr={3} onClick={onClose}>
-                            Cancel
+                            İptal Et
                         </Button>
                     </ModalFooter>
                 </ModalContent>
