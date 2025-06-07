@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 export const useProductStore = create((set) => ({
     products: [],
 
@@ -12,7 +14,7 @@ export const useProductStore = create((set) => ({
         }
 
         try {
-            const res = await fetch("http://localhost:5000/api/products", {
+            const res = await fetch(`${API_BASE_URL}/api/products`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newProduct),
@@ -38,7 +40,7 @@ export const useProductStore = create((set) => ({
     // ✅ Ürünleri Getirme
     fetchProducts: async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/products");
+            const res = await fetch(`${API_BASE_URL}/api/products`);
 
             if (!res.ok) {
                 throw new Error("Ürünler alınamadı");
@@ -58,8 +60,8 @@ export const useProductStore = create((set) => ({
 
     // ✅ Ürün Silme
     deleteProduct: async (pid) => {
-        const res = await fetch(`http://localhost:5000/api/products/${pid}`, {
-            method: "Sil",
+        const res = await fetch(`${API_BASE_URL}/api/products/${pid}`, {
+            method: "DELETE",  // "Sil" değil, HTTP DELETE olmalı
         });
         const data = await res.json();
         if (!data.success) return { success: false, message: data.message };
@@ -71,10 +73,10 @@ export const useProductStore = create((set) => ({
         return { success: true, message: data.message };
     },
 
-    // ✅ **Ürün Güncelleme (Hata Düzeltildi)**
+    // ✅ Ürün Güncelleme
     updateProduct: async (pid, updatedProduct) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/products/${pid}`, {
+            const res = await fetch(`${API_BASE_URL}/api/products/${pid}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedProduct),
@@ -83,7 +85,6 @@ export const useProductStore = create((set) => ({
             const data = await res.json();
             if (!data.success) return { success: false, message: data.message };
 
-            // **Güncellenmiş Ürünü Direkt State'e Ekle**
             set((state) => ({
                 products: state.products.map((product) =>
                     product._id === pid ? { ...product, ...updatedProduct } : product
