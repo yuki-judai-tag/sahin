@@ -1,9 +1,7 @@
-// backend/server.js
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
+import cors from "cors";  // CORS modülünü ekledik
 import path from "path";
-import { fileURLToPath } from 'url';
 import { connectionDB } from "./config/db.js";
 import productRoutes from "../routes/product.route.js";
 
@@ -11,28 +9,24 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS
-app.use(cors());
-
-// JSON body parser
+// CORS Middleware'ini kullan
+app.use(cors());  // Tüm domainlere izin verir (Güvenli değil ama lokal geliştirme için yeterli)
+const __dirname = path.resolve(); // __dirname'i tanımladık
+// JSON Middleware
 app.use(express.json());
 
-// Routes
+// API Route'ları
 app.use("/api/products", productRoutes);
 
-// __dirname çözümü (ESM için)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Production için statik frontend dosyaları
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "client")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "client", "index.html"));
-  });
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname, "/frontend/dist")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+    });
 }
 
+// Server'ı başlat
 app.listen(PORT, () => {
-  connectionDB();
-  console.log(`Server started on http://localhost:${PORT}`);
+    connectionDB();
+    console.log("Server started at http://localhost:" + PORT);
 });
